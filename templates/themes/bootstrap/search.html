@@ -1,0 +1,38 @@
+{% extends 'themes/bootstrap/layout.html' %}
+{% from 'themes/bootstrap/page_helpers.html' import render_navbar, render_author, render_featured, render_footer %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block navbar %}
+  {{ render_navbar() }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Search Results for <strong>{{s}}</strong></h1>
+  <hr />
+  <ol>
+    {% if pages %}
+        {% for page in pages %}
+          <li class="mt-2"><a href="{{page.slug}}">{{page.title}}</a></li>
+          {% if page.snippet %}
+            <p>{{page.snippet}}</p>
+          {% else %}
+            <p>{{page.content|striptags|truncate(200)}}</p>
+          {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No results found for <strong>{{s}}</strong>.</p>
+    {% endif %}
+  </ol>
+</div>
+{% endblock %}
+
+{% block footer %}
+  <div class="container text-center">
+    {{ render_footer(footer, g.color_mode) }}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

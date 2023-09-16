@@ -1,0 +1,139 @@
+{% macro render_featured(pages=[]) %}
+    {# render snippets of featured pages #}
+    <div class="mt-4">
+        <hr class="border-t border-gray-400">
+        <h3 class="text-xl font-bold">Featured Articles</h3>
+        {% for page in pages %}
+            <div class="mt-4 p-4 bg-white rounded shadow">
+                <h3 class="text-lg font-semibold"><a href="{{ page.slug }}" class="text-blue-600 hover:text-blue-800">{{ page.title }}</a></h3>
+                <p class="text-sm">
+                    {{ render_author(page) }}
+                </p>
+                {% if page.snippet %}
+                <p>
+                    {{ page.snippet | safe }} <a href="{{ page.slug }}" class="text-blue-600 hover:text-blue-800"> more...</a>
+                </p>
+                {% else %}
+                <p>
+                    {{ page.content | safe | truncate(200) }} <a href="{{ page.slug }}" class="text-blue-600 hover:text-blue-800"> more...</a>
+                </p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro render_footer(footer, category="default") %}
+<div class="mx-auto w-4/5 text-center">
+    <footer class="bg-{{ category }}-200 p-4 mt-4">
+        {% if footer %}
+            <div>{{footer.content | safe}}</div>
+            <div>
+                {% if g.menu %}
+                    {% for item in g.menu %}
+                        | <a href="{{ page.slug }}">{{ page.title }}</a> |
+                    {% endfor %}
+                {% endif %}
+                {% if g.is_admin %}
+                        | <a href="{{ url_for('admin') }}">Admin</a> |
+                {% endif %}
+                {% if g.is_authenticated %}
+                        | <a href="{{ url_for('page_edit', slug=page.slug) }}">Create</a> |
+                        | <a href="{{ url_for('admin_logout') }}">Logout</a> |
+                {% else %}
+                    {% if not g.hide_active %}
+                        | <a href="{{ url_for('admin_login') }}">Login</a> |
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% else %}
+            <p>
+            <strong>{{g.brand}}</strong> by <a href="https://flaskpress.org">Jeff et. al.</a>. The source code is licensed
+            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+            </p>
+            {% if g.menu %}
+                {% for item in g.menu %}
+                    | <a href="{{ item.slug }}">{{ item.title }}</a> |
+                {% endfor %}
+            {% endif %}
+            {% if g.is_admin %}
+                    | <a href="{{ url_for('admin') }}">Admin</a> |
+            {% endif %}
+            {% if g.is_authenticated %}
+                    | <a href="{{ url_for('admin_logout') }}">Logout</a> |
+            {% else %}
+                {% if not g.hide_active %}
+                    | <a href="{{ url_for('admin_login') }}">Login</a> |
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+    </footer>
+</div>
+{% endmacro %}
+
+{% macro render_navbar() %}
+<nav class="bg-gray-200 p-4">
+    <div class="mx-auto w-4/5 flex justify-between items-center">
+        {% if g.logo %}
+            <a class="navbar-brand" href="{{ url_for('page_view') }}"><img src="{{ g.logo }}" alt="{{ g.brand }}"></a>
+        {% else %}
+            <a class="navbar-brand font-bold" href="{{ url_for('page_view') }}">{{ g.brand }}</a>
+        {% endif %}
+        
+        <div class="flex items-center">
+            <ul class="flex space-x-4">
+                {% if g.menu %}
+                    {% for item in g.menu %}
+                        <li>
+                            <a class="text-blue-600 hover:text-blue-800" href="{{ item.slug }}">{{ item.title }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+
+            <form class="ml-4 flex items-center" action="{{ url_for('search') }}" method="GET">
+                <input class="form-control mr-2 p-1 border rounded" type="search" name="s" placeholder="Search" aria-label="Search">
+                <button class="btn bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600" type="submit">Search</button>
+            </form>
+        </div>
+        
+        <div class="flex space-x-4">
+            {% if g.is_authenticated %}
+                <a class="text-blue-600 hover:text-blue-800" href="{{ url_for('admin_view_all') }}">Admin</a>
+                <a class="text-blue-600 hover:text-blue-800" href="{{ url_for('admin_logout') }}">Logout</a>
+            {% else %}
+                {% if not g.hide_active %}
+                    <a class="text-blue-600 hover:text-blue-800" href="{{ url_for('admin_login') }}">Login</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endmacro %}
+
+
+{% macro render_utility_navbar(category="light") %}
+<div class="mx-auto w-4/5">
+  <nav class="p-4 bg-{{ category }}-200">
+    <a href="{{ url_for('site') }}" class="font-bold">{{ g.brand }}</a>
+  </nav>
+</div>
+{% endmacro %}
+
+{% macro render_author(page) %}
+    <p>
+    {% if page.alt_author %}
+        <i>by {{ page.alt_author }}</i>
+    {% elif page.displayname %}
+        <i>by {{ page.displayname }}</i>
+    {% else %}
+        <i>by {{ page.owner }}</i>
+    {% endif %}
+    {% if page.created_at %}
+        <i>on {{ page.created_at|datetimeformat }}</i>
+    {% endif %}
+    </p>
+{% endmacro %}
+

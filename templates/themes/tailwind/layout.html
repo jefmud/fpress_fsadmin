@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+
+    {% if g.icon %}
+    <link rel="icon" type="image/x-icon" href="{{g.icon}}">
+    {% else %}
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    {% endif %}
+
+    {% if page and page.stylesheet %}
+        <link rel="stylesheet" href="{{ page.stylesheet }}">
+    {% elif g.stylesheet %}
+        <link rel="stylesheet" href="{{ g.stylesheet }}">
+    {% else %}
+        <!-- Tailwind CSS CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    {% endif %}
+
+    <!-- Font Awesome -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
+    {% block styles %}
+    {% endblock %}
+</head>
+<body class="bg-gray-100">
+
+    {% block navbar %}
+    {% endblock %}
+
+    <div class="mx-auto mt-4 w-4/5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert bg-{{ category }}-200 p-4 rounded relative" role="alert">
+                    {{ message }}
+                    <button type="button" class="absolute top-0 right-0 p-4" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="mx-auto mt-4 w-4/5">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div class="mx-auto w-full">
+    {% block footer %}
+    {% endblock %}
+    </div>
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

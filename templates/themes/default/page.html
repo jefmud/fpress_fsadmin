@@ -1,0 +1,63 @@
+{% extends 'themes/default/layout.html' %}
+{% from 'themes/default/page_helpers.html' import render_navbar, render_author, render_featured, render_footer %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block navbar %}
+    {# navigation #}
+    {% if page.show_nav %}
+        {{ render_navbar() }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    
+    <div class="columns">
+        {% if sidebar_left %}
+            <div class="column is-one-quarter">
+                {{ sidebar_left.content | safe }}
+            </div>
+        {% endif %}
+        
+        <div class="column is-one-half">
+            {# see if user can edit this page, give them a button #}
+            {% if g.is_authenticated %}
+                <a class="button is-light is-small" href="{{ url_for('page_edit', slug=page.slug, next=next)}}">Edit</a>
+            {% endif %}
+
+            {% if page.show_title %}
+                <h1 class="title">{{ page.title }}</h1>
+                {{ render_author(page) }}
+            {% endif %}
+
+            {# breadcrumbs #}
+            {% if breadcrumbs %}
+                <nav class="breadcrumb" aria-label="breadcrumbs">
+                    <ul>
+                        {% for breadcrumb, breadcrumb_url in breadcrumbs %}
+                            <li><a href="{{ breadcrumb_url }}">{{breadcrumb}}</a></li>
+                        {% endfor %}
+                        <li class="is-active"><a href="#" aria-current="page">{{page.slug}}</a></li>
+                    </ul>
+                </nav>
+            {% endif %}
+
+            {{ page.content|safe }}
+            {% if page.show_snippets %}
+                {{ render_featured(featured_pages) }}
+            {% endif %}
+        </div>
+
+        {% if sidebar_right %}
+            <div class="column is-one-quarter">
+                {{ sidebar_right.content | safe }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {{ render_footer(footer, g.color_mode) }}
+{% endblock %}

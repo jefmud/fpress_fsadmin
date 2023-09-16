@@ -1,0 +1,253 @@
+{% macro render_featured(pages=[]) %}
+    {# render snippets of featured pages #}
+    <div class="mt-4">
+        <hr>
+        <h3>Featured Articles</h3>
+        {% for page in pages %}
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3 class="card-title"><a href="{{ page.slug }}">{{ page.title }}</a></h3>
+                    <p class="card-text small">
+                        {{ render_author(page) }}
+                    </p>
+                    {% if page.snippet %}
+                    <p class="card-text">
+                        {{ page.snippet | safe }} <a href="{{ page.slug }}" class="text-blue-600 hover:text-blue-800"> more...</a>
+                    </p>
+                    {% else %}
+                    <p class="card-text">
+                        {{ page.content | safe | truncate(200) }} <a href="{{ page.slug }}" class="text-blue-600 hover:text-blue-800"> more...</a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro render_menu(cls="navbar-nav mr-auto") %}
+    {% if g.menu %}
+        <ul class="{{cls}}">
+            {% for item in g.menu %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ item.slug }}">{{ item.title }}</a>
+                </li>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_search() %}
+<form class="form-inline my-2 my-lg-0" action="/search" method="GET">
+    <input class="form-control mr-sm-2" type="search" name="s" placeholder="Search" aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+</form>
+{% endmacro %}
+
+{% macro render_admin() %}
+    {% if g.is_authenticated %}
+        <a class="nav-link" href="{{ url_for('admin_view_all') }}">Admin</a>
+        <a class="nav-link" href="{{ url_for('admin_logout') }}">Logout</a>
+    {% else %}
+        <a class="nav-link" href="{{ url_for('admin_login') }}">Login</a>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_snippet(page) %}
+    <div class="card">
+        <div class="card-content">
+            <h3 class="subtitle"><a href="{{ page.slug }}">{{ page.title }}</a></h3>
+            <p class="is-small">
+                {{ render_author(page) }}
+            </p>
+            {% if page.snippet %}
+            <p>
+                {{ page.snippet | safe }} <a href="{{ page.slug }}"> more...</a>
+            </p>
+            {% else %}
+            <p>
+                {{ page.content | safe | truncate(200) }} <a href="{{ page.slug }}"> more...</a>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro render_footer(footer, category="bg-light") %}
+<footer class="footer py-3 {{ category }}">
+    <div class="container text-center">
+        {% if footer %}
+            <div>{{footer.content | safe}}</div>
+        {% else %}
+            <p>
+            <strong>{{g.brand}}</strong> by <a href="https://flaskpress.org">Jeff et. al.</a>. The source code is licensed
+            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+            </p>
+        {% endif %}
+        <!-- show standard menu -->
+        <nav class="navbar navbar-expand-lg navbar-light justify-content-center">
+            <div class="container">
+                {{ render_menu("navbar-nav") }}
+                {{ render_admin() }}
+            </div>
+        </nav>
+    </div>
+</footer>
+{% endmacro %}
+
+{% macro render_footer2(footer, category="is-default") %}
+<footer class="footer {{ category }}">
+    <div class="content has-text-centered">
+        {% if footer %}
+            <div class="content has-text-centered">
+                <div>{{footer.content | safe}}</div>
+            </div>
+        {% else %}
+            <div class="content has-text-centered">
+                <p>
+                <strong>{{g.brand}}</strong> by <a href="https://flaskpress.org">Jeff et. al.</a>. The source code is licensed
+                <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+                is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+                </p>
+            </div>
+        {% endif %}
+        <!-- show standard menu -->
+        <nav class="navbar" role="navigation" aria-label="dropdown navigation">
+            <div class="container has-text-centered">
+                {{ render_menu("navbar-end") }}
+                {{ render_admin() }}
+            </div>
+        </nav>
+    </div>
+</footer>
+{% endmacro %}
+
+{% macro render_footer1(footer, category="default") %}
+<div class="container text-center">
+    <footer class="footer bg-{{ category }} mt-4">
+        {% if footer %}
+            <div>{{footer.content | safe}}</div>
+            <div>
+                {% if g.menu %}
+                    {% for page in g.menu %}
+                        | <a href="{{ page.slug }}">{{ page.title }}</a> |
+                    {% endfor %}
+                {% endif %}
+                {% if g.is_admin %}
+                        | <a href="{{ url_for('admin') }}">Admin</a> |
+                {% endif %}
+                {% if g.is_authenticated %}
+                        | <a href="{{ url_for('page_edit', slug=page.slug) }}">Create</a> |
+                        | <a href="{{ url_for('admin_logout') }}">Logout</a> |
+                {% else %}
+                    {% if not g.hide_active %}
+                        | <a href="{{ url_for('admin_login') }}">Login</a> |
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% else %}
+            <p>
+            <strong>{{g.brand}}</strong> by <a href="https://flaskpress.org">Jeff et. al.</a>. The source code is licensed
+            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+            </p>
+            {% if g.menu %}
+                {% for page in g.menu %}
+                    | <a href="{{ page.slug }}">{{ page.title }}</a> |
+                {% endfor %}
+            {% endif %}
+            {% if g.is_admin %}
+                    | <a href="{{ url_for('admin') }}">Admin</a> |
+            {% endif %}
+            {% if g.is_authenticated %}
+                    | <a href="{{ url_for('admin_logout') }}">Logout</a> |
+            {% else %}
+                {% if not g.hide_active %}
+                    | <a href="{{ url_for('admin_login') }}">Login</a> |
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+    </footer>
+</div>
+{% endmacro %}
+
+{% macro render_navbar() %}
+    <div nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            {% if g.logo %}
+                <a class="navbar-brand" href="{{ url_for('page_view') }}"><img src="{{ g.logo }}" alt="{{ g.brand }}"></a>
+            {% else %}
+                <a class="navbar-brand" href="{{ url_for('page_view') }}"><strong>{{ g.brand }}</strong></a>
+            {% endif %}
+            <div class="collapse navbar-collapse">
+                {{ render_menu() }}
+                {{ render_search() }}
+                {{ render_admin() }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro render_navbar1() %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        {% if g.logo %}
+            <a class="navbar-brand" href="{{ url_for('page_view') }}"><img src="{{ g.logo }}" alt="{{ g.brand }}"></a>
+        {% else %}
+            <a class="navbar-brand" href="{{ url_for('page_view') }}"><strong>{{ g.brand }}</strong></a>
+        {% endif %}
+        
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                {% if g.menu %}
+                    {% for item in g.menu %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ item.slug }}">{{ item.title }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <form class="form-inline my-2 my-lg-0" action="{{ url_for('search') }}" method="GET">
+                <input class="form-control mr-sm-2" type="search" name="s" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+        
+        {% if g.is_authenticated %}
+            <a class="nav-link" href="{{ url_for('admin_view_all') }}">Admin</a>
+        {% endif %}
+        {% if g.is_authenticated %}
+            <a class="nav-link" href="{{ url_for('admin_logout') }}">Logout</a>
+        {% else %}
+            {% if not g.hide_active %}
+                <a class="nav-link" href="{{ url_for('admin_login') }}">Login</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</nav>
+{% endmacro %}
+
+{% macro render_utility_navbar(category="light") %}
+<div class="container">
+  <nav class="navbar navbar-{{category}}" role="navigation">
+    <a class="navbar-brand" href="{{ url_for('site') }}"><strong>{{ g.brand }}</strong></a>
+  </nav>
+</div>
+{% endmacro %}
+
+{% macro render_author(page) %}
+    <p>
+    {% if page.alt_author %}
+        <i>by {{ page.alt_author }}</i>
+    {% elif page.displayname %}
+        <i>by {{ page.displayname }}</i>
+    {% else %}
+        <i>by {{ page.owner }}</i>
+    {% endif %}
+    {% if page.created_at %}
+        <i>on {{ page.created_at|datetimeformat }}</i>
+    {% endif %}
+    </p>
+{% endmacro %}

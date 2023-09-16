@@ -1,0 +1,72 @@
+{% extends 'themes/bootstrap/layout.html' %}
+{% from 'themes/bootstrap/page_helpers.html' import render_navbar, render_author, render_featured, render_footer %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block navbar %}
+    {# navigation #}
+    {% if page.show_nav %}
+        {{ render_navbar() }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <div class="row">
+        {% if sidebar_left %}
+            <div class="col-md-3">
+                {{ sidebar_left.content | safe }}
+            </div>
+        {% endif %}
+        
+        {% if sidebar_left and sidebar_right %}
+            <div class="col-md-6">
+        {% elif sidebar_left %}
+            <div class="col-md-8">
+        {% elif sidebar_right %}
+            <div class="col-md-9">
+        {% else %}
+            <div class="container">
+        {% endif %}
+
+            {# see if user can edit this page, give them a button #}
+            {% if g.is_authenticated %}
+                <a class="btn btn-light btn-sm" href="{{ url_for('page_edit', slug=page.slug)}}">Edit</a>
+            {% endif %}
+
+            {% if page.show_title %}
+                <h1>{{ page.title }}</h1>
+                {{ render_author(page) }}
+            {% endif %}
+
+            {# breadcrumbs #}
+            {% if breadcrumbs %}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        {% for breadcrumb, breadcrumb_url in breadcrumbs %}
+                            <li class="breadcrumb-item"><a href="{{ breadcrumb_url }}">{{breadcrumb}}</a></li>
+                        {% endfor %}
+                        <li class="breadcrumb-item active" aria-current="page">{{page.slug}}</li>
+                    </ol>
+                </nav>
+            {% endif %}
+
+            {{ page.content|safe }}
+            {% if page.show_snippets %}
+                {{ render_featured(featured_pages) }}
+            {% endif %}
+        </div>
+
+        {% if sidebar_right %}
+            <div class="col-md-3">
+                {{ sidebar_right.content | safe }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {{ render_footer(footer, g.color_mode) }}
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    {% if g.icon %}
+      <link rel="icon" type="image/x-icon" href="{{ g.icon }}">
+    {% else %}
+      <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    {% endif %}
+
+    {% if page and page.stylesheet %}
+        <link rel="stylesheet" href="{{ page.stylesheet }}">
+    {% elif g.stylesheet %}
+        <link rel="stylesheet" href="{{ g.stylesheet }}">
+    {% else %}
+        <!-- Bulma CSS CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+    {% endif %}
+  
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous">
+    </script>
+
+    {# additional styles #}
+    {% block styles %}
+    {% endblock %}
+  </head>
+  <body>
+    {% block navbar %}
+    {% endblock %}
+    <section class="section">
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="container"></div>
+          {% for category, message in messages %}
+            <div class="notification is-{{ category }}">
+              <button class="delete"></button>
+                {{ message }}
+            </div>
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      
+      {# content section #}
+      <div class="container">
+      {% block content %}
+      {% endblock %}
+      </div>
+    </section>
+    {% block footer %}
+    {% endblock %}
+    {# scripts #}
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+          $notification = $delete.parentNode;
+          $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+          });
+        });
+      });
+    </script>
+    {% block scripts %}
+    {% endblock %}
+  </body>
+</html>

@@ -1,0 +1,64 @@
+{% extends 'themes/tailwind/layout.html' %}
+{% from 'themes/tailwind/page_helpers.html' import render_navbar, render_author, render_featured, render_footer %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block navbar %}
+    {# navigation #}
+    {% if page.show_nav %}
+        {{ render_navbar() }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto mt-4 w-4/5">
+    
+    <div class="flex flex-wrap -mx-4">
+        {% if sidebar_left %}
+            <div class="w-full md:w-1/4 px-4">
+                {{ sidebar_left.content | safe }}
+            </div>
+        {% endif %}
+        
+        <div class="{{ 'w-full md:w-1/2' if sidebar_left and sidebar_right else 'w-full md:w-2/3' if sidebar_left or sidebar_right else 'w-full' }} px-4">
+            {# see if user can edit this page, give them a button #}
+            {% if g.is_authenticated %}
+                <a class="bg-gray-200 text-gray-700 py-1 px-3 rounded hover:bg-gray-300" href="{{ url_for('page_edit', slug=page.slug)}}">Edit</a>
+            {% endif %}
+
+            {% if page.show_title %}
+                <h1 class="text-2xl font-bold">{{ page.title }}</h1>
+                {{ render_author(page) }}
+            {% endif %}
+
+            {# breadcrumbs #}
+            {% if breadcrumbs %}
+                <nav aria-label="breadcrumb" class="text-sm">
+                    <ol class="list-reset flex">
+                        {% for breadcrumb, breadcrumb_url in breadcrumbs %}
+                            <li><a href="{{ breadcrumb_url }}" class="text-blue-600 hover:text-blue-800">{{breadcrumb}}</a></li>
+                            <li class="mx-2">/</li>
+                        {% endfor %}
+                        <li class="text-gray-600">{{page.slug}}</li>
+                    </ol>
+                </nav>
+            {% endif %}
+
+            {{ page.content|safe }}
+            {% if page.show_snippets %}
+                {{ render_featured(featured_pages) }}
+            {% endif %}
+        </div>
+
+        {% if sidebar_right %}
+            <div class="w-full md:w-1/4 px-4">
+                {{ sidebar_right.content | safe }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {{ render_footer(footer, g.color_mode) }}
+{% endblock %}

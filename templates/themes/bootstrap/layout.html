@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock %}</title>
+
+    {% if g.icon %}
+    <link rel="icon" type="image/x-icon" href="{{g.icon}}">
+    {% else %}
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    {% endif %}
+
+   {% if page and page.stylesheet %}
+        <link rel="stylesheet" href="{{ page.stylesheet }}">
+    {% elif g.stylesheet %}
+        <link rel="stylesheet" href="{{ g.stylesheet }}">
+    {% else %}
+        <!-- Bootstrap CSS CDN -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.6.2/united/bootstrap.css" rel="stylesheet">
+    {% endif %}
+    
+    <!-- Font Awesome -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+    {% block styles %}
+    {% endblock %}
+</head>
+<body>
+    {% block navbar %}
+    {% endblock %}
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div class="container-fluid">
+    {% block footer %}
+    {% endblock %}
+    </div>
+    
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

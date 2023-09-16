@@ -1,0 +1,34 @@
+{% extends 'themes/default/layout.html' %}
+{% from 'page_helpers.html' import render_navbar, render_author, render_featured, render_footer %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block navbar %}
+  {{ render_navbar() }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Search Results for <strong>{{s}}</strong></h1>
+  <br />
+  {% if pages %}
+  <ol>
+    {% for page in pages %}
+      <li><a href="{{page.slug}}">{{page.title}}</a></li>
+      {% if page.snippet %}
+        <p>{{page.snippet | safe}}</p>
+      {% else %}
+        <p>{{page.content | safe | truncate(200)}}</p>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  </ol>
+</div>
+{% endblock %}
+
+{% block footer %}
+  {{ render_footer(footer, g.color_mode) }}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
