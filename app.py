@@ -101,7 +101,7 @@ def search():
     if not os.path.exists(f'templates/themes/{theme}/page.html'):
         theme = 'default'
         
-    return render_template(f'themes/{theme}/search.html', pages=pages, s=s)
+    return render_template(f'themes/{theme}/search.html', pages=pages, s=search_term)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
